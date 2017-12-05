@@ -18,8 +18,9 @@ end
 best_c = constant(idx);
 best_c_model = fitcsvm(training_data, training_label,  'KernelFunction', 'linear', 'KernelScale', 1, 'BoxConstraint', best_c);
 pred = predict(best_c_model, test_data);
+fprintf('Best C:%.2f\n', best_c);
 fprintf('Soft-Margin SVM Test Accuracy: %.2f%%\n', sum(pred==test_label) / 268 * 100);
 
-hard_margin_model = fitcsvm(training_data, training_label, 'KernelFunction', 'linear', 'KernelScale', 1, 'BoxConstraint', 1e6);
+hard_margin_model = fitcsvm(training_data, training_label, 'KernelFunction', 'linear', 'KernelScale', 1, 'BoxConstraint', 1e8);
 pred = predict(hard_margin_model, test_data);
 fprintf('Hard-Margin SVM Test Accuracy: %.2f%%\n', sum(pred==test_label) / 268 * 100);
