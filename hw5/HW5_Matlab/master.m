@@ -38,27 +38,30 @@ for epoch = 1:no_epochs
     % Hint: first implement the gradient for each parameter, then apply
     % gradient descent.
     
-    %
+    
     % your code......
     %
     
-    E_theta = mean((-y + probs) .* a_h2);
-    E_b4 = mean(-y + probs);
+    E_theta = sum((-y + probs) .* a_h2);
+    E_b4 = sum(-y + probs);
     
-    E_h2 = repmat(-y +probs, 1, 3) .* repmat(W('W_h2_output')', 200, 1);
-    E_w2 = zeros(3, 3);
+    E_h2 = (-y +probs) * W('W_h2_output')';
+    E_w2 = zeros(nodes_hidden_1, nodes_hidden_2);
+    E_h1 = zeros(200, nodes_hidden_1);
+    E_b2 = zeros(1, nodes_hidden_2);
     for i = 1 : 200
-        E_w2 = E_w2 + 1.0 / 200 * (repmat(E_h2(i, :), 3, 1) .* ((1 - a_h2(i, :).^2)' * a_h1(i, :)));
+        E_w2 = E_w2 + a_h1(i, :)' * (E_h2(i, :) .* (1 - a_h2(i, :) .^ 2));
     end
-    E_b2 = mean(E_h2 .* (1 - a_h2 .^ 2));
+    E_h1 = E_h2 .* (1 - a_h2 .^ 2) * W('W_h1_h2')';
+    E_b2 = sum(E_h2 .* (1 - a_h2 .^ 2));
         
-    E_h1 = E_h2 * W('W_h1_h2');
-    E_w1 = zeros(2, 3);
+    E_w1 = zeros(input_dim, nodes_hidden_1);
+    E_b1 = zeros(1, nodes_hidden_1);
     for i = 1 : 200
-        E_w1 = E_w1 + 1.0 / 200 * (repmat(E_h2(i, :), 2, 1)'.* ((1 - a_h1(i, :).^2)' * X(i, :)))';
+        E_w1 = E_w1 + X(i, :)' * (E_h1(i, :) .* (1 - a_h1(i, :) .^ 2));
     end
-    E_b1 = mean(E_h1 .* (1 - a_h1.^2));
     
+    E_b1 = sum(E_h1 .* (1 - a_h1 .^ 2));
     W('W_h2_output') = W('W_h2_output') - learning_rate * E_theta';
     W('b_h2_output') = W('b_h2_output') - learning_rate * E_b4;
         
